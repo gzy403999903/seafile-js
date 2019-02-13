@@ -1277,6 +1277,67 @@ class SeafileAPI {
     const url = this.server + '/api2/repos/' + repoID + '/dir/metadata/?p=' + dirPath;
     return this.req.get(url);
   }
+
+  // single org admin api
+  listOrgUsers(orgID) {
+    const url = this.server + '/api/v2.1/org/' + orgID +  '/useradmin/users/';
+    return this.req.get(url);
+  }
+
+  listOrgAdminUsers(orgID) {
+    const url = this.server + '/api/v2.1/org/' + orgID +  '/useradmin/admins/';
+    return this.req.get(url);
+  }
+
+  deleteOrgUser(orgID, email) {
+    const url = this.server + '/api/v2.1/org/' + orgID + '/admin/users/'+ email + '/';
+    return this.req.delete(url);
+  }
+
+  resetOrgUserPassword(orgID, email) {
+    const url = this.server + '/api/v2.1/org/' + orgID + '/admin/users/'+ email + '/';
+    return this.req.post(url);
+  }
+
+  changeOrgUserStatus(userID, statusCode) {
+    const url = this.server + '/org/useradmin/toggle_status/' + userID + '/';
+    let form = new FormData();
+    form.append('s', statusCode);
+    return this.req.post(url, form, { headers: {'X-Requested-With': 'XMLHttpRequest'}});
+  }
+
+  addOrgUser(orgID, email, name, password1, password2) {
+    const url =  this.server + '/api/v2.1/org/' + orgID +'/useradmin/users/';
+    let form = new FormData();
+    form.append('email', email);
+    form.append('name', name);
+    form.append('password1', password1);
+    form.append('password2', password2);
+    return this._sendPostRequest(url, form);
+  }
+
+  addOrgAdmin(orgID, email) {
+    const url = this.server + '/api/v2.1/org/' + orgID +  '/useradmin/admins/';
+    let form = new FormData();
+    if (Array.isArray(email)) {
+      email.forEach(item => {
+        form.append('email', item);
+      });
+    }
+    return this._sendPostRequest(url, form);
+  }
+
+  removeOrgAdmin(orgID, userID) {
+    const url = this.server + '/api/v2.1/org/' + orgID +  '/useradmin/admins/';
+    let form = new FormData();
+    form.append('user_id', userID);
+    return this.req.put(url, form);
+  }
+
+  searchOrgUsers(orgID, email) {
+    const url = this.server + '/api/v2.1/org/' + orgID +  '/useradmin/search/?email=' + encodeURIComponent(email);
+    return this.req.get(url);
+  }
 }
 
 export { SeafileAPI };
